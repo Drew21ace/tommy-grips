@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 export default async function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,19 +32,20 @@ export default async function handler(req, res) {
   const nameParts = name.trim().split(' ');
   const firstName = nameParts[0] || '';
   const lastName = nameParts.slice(1).join(' ') || '';
+  const subscriberHash = crypto.createHash('md5').update(email.toLowerCase()).digest('hex');
 
   try {
     const response = await fetch(
-      `https://${DC}.api.mailchimp.com/3.0/lists/${AUDIENCE_ID}/members`,
+      `https://${DC}.api.mailchimp.com/3.0/lists/${AUDIENCE_ID}/members/${subscriberHash}`,
       {
-        method: 'POST',
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Basic ${Buffer.from(`anystring:${API_KEY}`).toString('base64')}`,
         },
         body: JSON.stringify({
           email_address: email,
-          status: 'subscribed',
+          status_if_new: 'subscribed',
           merge_fields: {
             FNAME: firstName,
             LNAME: lastName,
@@ -61,11 +64,6 @@ export default async function handler(req, res) {
 
     if (response.ok) {
       return res.status(200).json({ success: true, message: 'Preorder received!' });
-    }
-
-    // Handle "already subscribed"
-    if (data.title === 'Member Exists') {
-      return res.status(200).json({ success: true, message: 'You\'re already on the list! We\'ll be in touch.' });
     }
 
     console.error('Mailchimp error:', data);
