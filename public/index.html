@@ -856,33 +856,61 @@
   colorSelect.addEventListener('change', updatePrice);
   quantitySelect.addEventListener('change', updatePrice);
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
+    const phone = document.getElementById('phone').value.trim();
     const size = document.getElementById('size').value;
     const color = colorSelect.value;
+    const quantity = quantitySelect.value;
+    const total = priceDisplay.textContent;
+    const submitBtn = document.getElementById('submitBtn');
+    const formError = document.getElementById('formError');
 
+    // Validate required fields
     if (!name || !email || !size || !color) {
-      alert('Please fill in all required fields.');
+      formError.textContent = 'Please fill in all required fields.';
+      formError.style.display = 'block';
       return;
     }
 
+    // Validate email format
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      alert('Please enter a valid email address.');
+      formError.textContent = 'Please enter a valid email address.';
+      formError.style.display = 'block';
       return;
     }
 
-    document.getElementById('orderForm').style.display = 'none';
-    document.getElementById('successMsg').classList.add('show');
-    document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Hide any previous error
+    formError.style.display = 'none';
 
-    console.log('Preorder submitted:', {
-      name, email,
-      phone: document.getElementById('phone').value,
-      size, color,
-      quantity: quantitySelect.value,
-      total: priceDisplay.textContent
-    });
+    // Disable button and show spinner
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner"></span>Processing...';
+
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, size, color, quantity, total })
+      });
+
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Something went wrong. Please try again.');
+      }
+
+      // Success - hide form and show success message
+      document.getElementById('orderForm').style.display = 'none';
+      document.getElementById('successMsg').classList.add('show');
+      document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (error) {
+      // Show error and re-enable button
+      formError.textContent = error.message;
+      formError.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Place Preorder';
+    }
   }
 
   // Gallery scroll and dot indicator functionality
