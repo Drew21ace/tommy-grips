@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Confirmed — Tommy Grips</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #050508;
+    --card: #0d0d15;
+    --card-border: #1a1a2e;
+    --blue: #1a6fff;
+    --blue-bright: #3d8bff;
+    --blue-glow: #0055dd;
+    --blue-electric: #00aaff;
+    --white: #eeeef4;
+    --gray: #777790;
+    --light-gray: #aaaabb;
+    --success: #22c55e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(26,111,255,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 50% 100%, rgba(0,170,255,0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .confirm-card {
+    position: relative;
+    z-index: 1;
+    max-width: 560px;
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(26,111,255,0.08);
+  }
+
+  .check-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-glow) 100%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 30px rgba(26,111,255,0.4);
+  }
+
+  h1 {
+    font-family: 'Teko', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2rem, 6vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  h1 .blue {
+    background: linear-gradient(135deg, var(--blue-bright) 0%, var(--blue-electric) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subhead {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 500;
+    font-size: clamp(1.05rem, 3vw, 1.25rem);
+    color: var(--light-gray);
+    margin-bottom: 1rem;
+    letter-spacing: 0.02em;
+  }
+
+  .body-copy {
+    font-size: 0.95rem;
+    color: var(--gray);
+    margin-bottom: 2rem;
+    line-height: 1.55;
+  }
+
+  .order-id {
+    display: inline-block;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    color: #444459;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--card-border);
+    border-radius: 4px;
+    word-break: break-all;
+  }
+
+  .order-id strong {
+    color: var(--blue-electric);
+    font-weight: 600;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .cta-primary {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-glow) 100%);
+    color: var(--white);
+    font-family: 'Teko', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.85rem 1.5rem;
+    border-radius: 6px;
+    border: 1px solid rgba(61,139,255,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 20px rgba(26,111,255,0.25);
+  }
+
+  .cta-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(26,111,255,0.4);
+  }
+
+  .cta-secondary {
+    color: var(--gray);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .cta-secondary:hover { color: var(--blue-electric); }
+
+  .lightning-divider {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--blue) 20%, var(--blue-electric) 50%, var(--blue) 80%, transparent 100%);
+    margin: 1.75rem auto;
+    max-width: 220px;
+    opacity: 0.5;
+    box-shadow: 0 0 15px rgba(0,170,255,0.3);
+  }
+</style>
+</head>
+<body>
+
+<div class="confirm-card">
+  <div class="check-circle">
+    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="20 6 9 17 4 12"/>
+    </svg>
+  </div>
+
+  <h1>ORDER CONFIRMED.<br><span class="blue">WELCOME TO THE GANG.</span></h1>
+  <p class="subhead">Your Tommy Grips are on the way. Ships within 2 weeks.</p>
+  <p class="body-copy">Check your email for a receipt and tracking info when your order ships.</p>
+
+  <div class="lightning-divider"></div>
+
+  <div class="cta-row">
+    <a class="cta-primary" href="https://www.instagram.com/tommy.grips" target="_blank" rel="noopener">Follow @tommy.grips</a>
+    <a class="cta-secondary" href="/">← Back to home</a>
+  </div>
+
+  <div id="orderIdWrap" style="display:none;">
+    <div class="order-id">Order: <strong id="orderId"></strong></div>
+  </div>
+</div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = params.get('session_id');
+  if (sessionId) {
+    document.getElementById('orderId').textContent = sessionId;
+    document.getElementById('orderIdWrap').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>

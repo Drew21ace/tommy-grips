@@ -867,45 +867,49 @@
     const submitBtn = document.getElementById('submitBtn');
     const formError = document.getElementById('formError');
 
-    // Validate required fields
     if (!name || !email || !size || !color) {
       formError.textContent = 'Please fill in all required fields.';
       formError.style.display = 'block';
       return;
     }
 
-    // Validate email format
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       formError.textContent = 'Please enter a valid email address.';
       formError.style.display = 'block';
       return;
     }
 
-    // Hide any previous error
     formError.style.display = 'none';
-
-    // Disable button and show spinner
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner"></span>Processing...';
+    submitBtn.innerHTML = '<span class="spinner"></span>Redirecting to checkout...';
 
     try {
-      const response = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, phone, size, color, quantity, total })
-      });
-
-      if (!response.ok) {
-        const data = await response.json().catch(() => ({}));
-        throw new Error(data.error || 'Something went wrong. Please try again.');
+      try {
+        await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, size, color, quantity, total })
+        });
+      } catch (subErr) {
+        console.warn('Lead capture failed (continuing to checkout):', subErr);
       }
 
-      // Success - hide form and show success message
-      document.getElementById('orderForm').style.display = 'none';
-      document.getElementById('successMsg').classList.add('show');
-      document.getElementById('successMsg').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const checkoutRes = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ size, color, quantity })
+      });
+
+      if (!checkoutRes.ok) {
+        const data = await checkoutRes.json().catch(() => ({}));
+        throw new Error(data.error || 'Could not start checkout. Please try again.');
+      }
+
+      const { url } = await checkoutRes.json();
+      if (!url) throw new Error('Checkout session missing redirect URL.');
+
+      window.location.href = url;
     } catch (error) {
-      // Show error and re-enable button
       formError.textContent = error.message;
       formError.style.display = 'block';
       submitBtn.disabled = false;
